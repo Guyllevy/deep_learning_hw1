@@ -14,7 +14,7 @@ part1_q1 = r"""
 Statement 1 : "The test set allows us to estimate our in-sample error."
 This is False, the in-sample error is the error we get on the training set
 
-This
+TESTING GIT TESTING GIT TESTING GIT
 
 """
 
