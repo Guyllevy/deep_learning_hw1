@@ -31,6 +31,10 @@ This is true, after performing cross-validation, we use the average of the valid
 part1_q2 = r"""
 **Your answer:**
 
+The friends approach is not justified as he chose his model based on the test results.
+By doing this he effectivly learned from the test set.
+That is a wrong approach because the test set is suppose to evaluate a model's ability to generelize over the training data.
+
 
 
 """
