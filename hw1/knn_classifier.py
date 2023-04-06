@@ -64,8 +64,9 @@ class KNNClassifier(object):
             #  - Set y_pred[i] to the most common class among them
             #  - Don't use an explicit loop.
             # ====== YOUR CODE: ======
-            neighbors = torch.topk(dist_matrix[i,:], self.k, largest=False, sorted=False)
-            y_pred[i] = int(torch.mode(neighbors)[0])
+            neighbors_ids = torch.topk(dist_matrix[:,i], self.k, largest=False, sorted=False)[1]
+            neighbors_lbls = self.y_train[neighbors_ids]
+            y_pred[i] = int(torch.mode(neighbors_lbls)[0])
             # ========================
 
         return y_pred
@@ -95,8 +96,7 @@ def l2_dist(x1: Tensor, x2: Tensor):
     # ====== YOUR CODE: ======
     N1, D = x1.shape
     N2 = x2.shape[0]
-    # dists = ((x1.view((N1,1,D)) - x2)**2).sum(dim = 2).sqrt()
-    dists = (x1**2 - 2*x1@x2.T + x2**2).sum(dim = 2).sqrt()
+    dists = ((x1**2).sum(dim=1).view((N1,1)) - 2*(x1@x2.T) + (x2**2).sum(dim=1)).sqrt()
     
     # ========================
 
