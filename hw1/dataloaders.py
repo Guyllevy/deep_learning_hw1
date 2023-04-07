@@ -90,7 +90,7 @@ def create_train_validation_loaders(
     N = len(dataset)
     V = int(N * validation_ratio)
 
-    valid_ids, train_ids = torch.split(torch.Tensor(list(range(N))),[V,N-V]) #split might want tensor?
+    valid_ids, train_ids = torch.split(torch.Tensor(list(range(N))),[V,N-V])
 
     train_sampler = SplitSampler(dataset,train_ids)
     valid_sampler = SplitSampler(dataset,valid_ids)

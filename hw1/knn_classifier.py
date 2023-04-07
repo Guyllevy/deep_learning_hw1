@@ -1,7 +1,8 @@
 import numpy as np
 import torch
 from torch import Tensor
-from torch.utils.data import Dataset, DataLoader
+from torch.utils.data import Dataset, DataLoader, Sampler # <-- added Sampler
+from typing import Sized, Iterator # <-- added
 
 import cs236781.dataloader_utils as dataloader_utils
 
@@ -121,7 +122,33 @@ def accuracy(y: Tensor, y_pred: Tensor):
     # ========================
 
     return accuracy
+# ==============MY_CODE===============
+class k_cv_sampler(Sampler):
+    
+    def __init__(self, data_source: Sized, num_folds, val_fold_iteration, validation_bool):
+        super().__init__(data_source)
+        self.data_source = data_source
+        self.num_folds = num_folds
+        self.val_fold_iteration = val_fold_iteration
+        N = len(data_source)
+        i = val_fold_iteration
+        self.val_ids = list(range(i*N//num_folds, (i+1)*N//num_folds))
+        self.train_ids = list(set(range(N)) - set(self.val_ids))
+        self.validation_bool = validation_bool
 
+    def __iter__(self) -> Iterator[int]:
+        if self.validation_bool:
+            for j in range(len(self.val_ids)):
+                yield self.val_ids[j]
+        else:
+            for i in range(len(self.train_ids)):
+                yield self.train_ids[i]
+
+
+    def __len__(self):
+        return len(self.data_source)
+
+# ====================================
 
 def find_best_k(ds_train: Dataset, k_choices, num_folds):
     """
@@ -136,6 +163,7 @@ def find_best_k(ds_train: Dataset, k_choices, num_folds):
     """
 
     accuracies = []
+    N = len(ds_train)
 
     for i, k in enumerate(k_choices):
         model = KNNClassifier(k)
@@ -148,7 +176,25 @@ def find_best_k(ds_train: Dataset, k_choices, num_folds):
         #  random split each iteration), or implement something else.
 
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        choice_accuracies = []
+        
+        for cv_k_iteration in range(num_folds):
+                              
+            sampler_train = k_cv_sampler(ds_train, num_folds, val_fold_iteration=cv_k_iteration, validation_bool=False)
+            dl_train_folds = torch.utils.data.DataLoader(ds_train, sampler = sampler_train)
+            
+            sampler_valid = k_cv_sampler(ds_train, num_folds, val_fold_iteration=cv_k_iteration, validation_bool=True)
+            dl_valid_fold = torch.utils.data.DataLoader(ds_train, sampler = sampler_valid)
+            x_test, y_test = dataloader_utils.flatten(dl_valid_fold)
+            
+            model.train(dl_train_folds)
+            y_pred = model.predict(x_test)
+
+            iteration_acc = accuracy(y_test, y_pred)
+            choice_accuracies.append(iteration_acc)
+        
+        accuracies.append(choice_accuracies)
+        
         # ========================
 
     best_k_idx = np.argmax([np.mean(acc) for acc in accuracies])
