@@ -45,26 +45,24 @@ That is a wrong approach because the test set is suppose to evaluate a model's a
 part2_q1 = r"""
 **Your answer:**
 
-
-Write your answer using **markdown** and $\LaTeX$:
-```python
-# A code block
-a = 2
-```
-An equation: $e^{i\pi} -1 = 0$
+Increasing k leads to improved generalization only up to a point,
+when k is large the algorithm, KNN when predicting a test example will take in to account examples which are far away from the test example, and so are less informative (less likely to be the same class as the test example).
+For that reason we will get worse results when k is increased from some point.
 
 """
 
 part2_q2 = r"""
 **Your answer:**
 
+Explain why (i.e. in what sense) using k-fold CV, as detailed above, is better than:
 
-Write your answer using **markdown** and $\LaTeX$:
-```python
-# A code block
-a = 2
-```
-An equation: $e^{i\pi} -1 = 0$
+Training on the entire train-set with various models and selecting the best model with respect to train-set accuracy.
+Training on the entire train-set with various models and selecting the best model with respect to test-set accuracy.
+
+Better than 1: Because training on the entire train-set can cause overfitting the examples of the train-set. A model can do very well on the train-set but with very poor generalization ability. k-fold CV solves this by extimating each models generalization ability.
+
+Better than 2: Because choosing a model based on performance on the test set means we learned a model using the test set.
+The test set is meant for evaluating the models generalization ability, and by learning from it we miss this goal.
 
 """
 
