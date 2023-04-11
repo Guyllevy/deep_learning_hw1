@@ -28,7 +28,7 @@ class SVMHingeLoss(ClassifierLoss):
         self.delta = delta
         self.grad_ctx = {}
 
-    def loss(self, x, y, x_scores, y_predicted):
+    def loss(self, x, y, x_scores, y_predicted, weights = None, weight_decay = 0):
         """
         Calculates the Hinge-loss for a batch of samples.
 
@@ -59,11 +59,13 @@ class SVMHingeLoss(ClassifierLoss):
         M[M < 0] = 0
         M_sums = M.sum(dim =1)
         loss = M_sums.mean()
+        if weights != None:
+            loss += 0.5*weight_decay*torch.norm(weights)
         # ========================
 
         # TODO: Save what you need for gradient calculation in self.grad_ctx
         # ====== YOUR CODE: ======
-        self.grad_ctx = (M,x,y)
+        self.grad_ctx = (M,x,y,weights,weight_decay)
         # ========================
 
         return loss
@@ -85,12 +87,16 @@ class SVMHingeLoss(ClassifierLoss):
         # X (B,D)
         # (D,B) @ (B,C) = (D,C)
         # first assume B = 1
-        M,x,y = self.grad_ctx
+        M,x,y,weights,weight_decay = self.grad_ctx
         G = torch.zeros_like(M)
         # M in the i, y_i spot is 0 so leave G at 0 and add elements in those spots later
         G = (M > 0).float()
-        G[torch.arange(G.shape[0]), y] = -M.sum(dim=1)
-        return x.T @ G
+        G_new = G.clone()
+        G_new[torch.arange(G_new.shape[0]), y] = -G.sum(dim=1)
+        G_new *= 1/x.shape[0]
+        grad = x.T @ G_new
+        if weights != None:
+            grad += weight_decay*weights
         
         # ========================
 

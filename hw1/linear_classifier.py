@@ -48,7 +48,7 @@ class LinearClassifier(object):
         # S = XW
         class_scores = x @ self.weights
         # row i of S is the scores of x_i (row i of x)
-        y_pred = torch.mode(class_scores).indices
+        y_pred = torch.max(class_scores, dim=1).indices
         # ========================
 
         return y_pred, class_scores
@@ -105,7 +105,30 @@ class LinearClassifier(object):
             #     using the weight_decay parameter.
 
             # ====== YOUR CODE: ======
-            raise NotImplementedError()
+            
+            train_loss_accumulate = 0
+            train_acc_accumulate = 0
+
+            for (x_t, y_t) in dl_train:
+                yp_t, cs_t = self.predict(x_t)
+                train_loss_accumulate  += loss_fn(x_t, y_t, cs_t, yp_t, self.weights, weight_decay)
+                train_acc_accumulate += self.evaluate_accuracy(y_t, yp_t)
+                self.weights -= loss_fn.grad() * learn_rate
+                
+            train_res.accuracy.append(train_acc_accumulate.mean())
+            train_res.loss.append(train_loss_accumulate.mean())
+            
+            
+            valid_loss_accumulate = 0
+            valid_acc_accumulate = 0
+            
+            for (x_v, y_v) in dl_valid:
+                yp_v, cs_v = self.predict(x_v)
+                valid_loss_accumulate  += loss_fn(x_v, y_v, cs_v, yp_v)
+                valid_acc_accumulate += self.evaluate_accuracy(y_v, yp_v)
+                
+            valid_res.accuracy.append(valid_acc_accumulate.mean())
+            valid_res.loss.append(valid_loss_accumulate.mean())
             # ========================
             print(".", end="")
 
@@ -139,7 +162,9 @@ def hyperparams():
     #  Manually tune the hyperparameters to get the training accuracy test
     #  to pass.
     # ====== YOUR CODE: ======
-    raise NotImplementedError()
+    hp['weight_std'] = 0.01
+    hp['learn_rate'] = 0.01
+    hp['weight_decay'] = 0.001
     # ========================
 
     return hp

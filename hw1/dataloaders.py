@@ -43,23 +43,6 @@ class FirstLastSampler(Sampler):
     def __len__(self):
         return len(self.data_source)
     
-# ====== MY CODE: =========
-class SplitSampler(Sampler):
-    
-    def __init__(self, data_source: Sized, indices):
-        super().__init__(data_source)
-        self.data_source = data_source
-        self.indices = indices
-        
-    def __iter__(self) -> Iterator[int]:
-        i = 0
-        while i < self.indices:
-            yield self.indices[i]
-            i+=1
-
-    def __len__(self):
-        return len(self.data_source)
-# ========================
 
 def create_train_validation_loaders(
     dataset: Dataset, validation_ratio, batch_size=100, num_workers=2
@@ -87,21 +70,16 @@ def create_train_validation_loaders(
     #  Hint: you can specify a Sampler class for the `DataLoader` instance
     #  you create.
     # ====== YOUR CODE: ======
+
     N = len(dataset)
     V = int(N * validation_ratio)
 
-    valid_ids, train_ids = torch.split(torch.Tensor(list(range(N))),[V,N-V])
-
-    train_sampler = SplitSampler(dataset,train_ids)
-    valid_sampler = SplitSampler(dataset,valid_ids)
-    
-    dl_train = torch.utils.data.DataLoader(
-        dataset, batch_size=batch_size, num_workers=num_workers,
-        sampler=train_sampler)
-    
-    dl_valid = torch.utils.data.DataLoader(
-        dataset, batch_size=batch_size, num_workers=num_workers,
-        sampler=valid_sampler)
+    train_indices = list(range(N-V))
+    valid_indices = list(range(N-V,N))
+    dl_train = torch.utils.data.DataLoader(dataset, batch_size=batch_size, num_workers=num_workers,
+                                          sampler = torch.utils.data.SubsetRandomSampler(train_indices))
+    dl_valid = torch.utils.data.DataLoader(dataset, batch_size=batch_size, num_workers=num_workers,
+                                          sampler = torch.utils.data.SubsetRandomSampler(valid_indices))
     
     # ========================
 
