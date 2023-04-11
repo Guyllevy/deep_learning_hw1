@@ -106,29 +106,33 @@ class LinearClassifier(object):
 
             # ====== YOUR CODE: ======
             
+            valid_loss_accumulate = 0
+            valid_acc_accumulate = 0
+            counter = 0
+            
+            for (x_v, y_v) in dl_valid:
+                yp_v, cs_v = self.predict(x_v)
+                valid_loss_accumulate  += loss_fn(x_v, y_v, cs_v, yp_v)
+                valid_acc_accumulate += self.evaluate_accuracy(y_v, yp_v).item()
+                counter += 1
+                
+            valid_res.accuracy.append(valid_acc_accumulate / counter )
+            valid_res.loss.append(valid_loss_accumulate / counter )
+            
             train_loss_accumulate = 0
             train_acc_accumulate = 0
+            counter = 0
 
             for (x_t, y_t) in dl_train:
                 yp_t, cs_t = self.predict(x_t)
                 train_loss_accumulate  += loss_fn(x_t, y_t, cs_t, yp_t, self.weights, weight_decay)
                 train_acc_accumulate += self.evaluate_accuracy(y_t, yp_t)
                 self.weights -= loss_fn.grad() * learn_rate
+                counter += 1
                 
-            train_res.accuracy.append(train_acc_accumulate.mean())
-            train_res.loss.append(train_loss_accumulate.mean())
-            
-            
-            valid_loss_accumulate = 0
-            valid_acc_accumulate = 0
-            
-            for (x_v, y_v) in dl_valid:
-                yp_v, cs_v = self.predict(x_v)
-                valid_loss_accumulate  += loss_fn(x_v, y_v, cs_v, yp_v)
-                valid_acc_accumulate += self.evaluate_accuracy(y_v, yp_v)
-                
-            valid_res.accuracy.append(valid_acc_accumulate.mean())
-            valid_res.loss.append(valid_loss_accumulate.mean())
+            train_res.accuracy.append(train_acc_accumulate / counter )
+            train_res.loss.append(train_loss_accumulate / counter )
+
             # ========================
             print(".", end="")
 
@@ -149,7 +153,16 @@ class LinearClassifier(object):
         #  The output shape should be (n_classes, C, H, W).
 
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        # weights shape is (features, classes)
+        # each column j of weights represents a picture to dot with an example to get the example score on class j
+        # process:
+        # (features, classes) --1--> (classes, features) --2--> (classes,channel,d1,d2)
+        W = torch.clone(self.weights)
+        if has_bias:
+            W = W[:-1,:]
+        W = W.T
+        n_classes = W.shape[0]
+        w_images = W.view((n_classes, *img_shape))
         # ========================
 
         return w_images
@@ -162,9 +175,9 @@ def hyperparams():
     #  Manually tune the hyperparameters to get the training accuracy test
     #  to pass.
     # ====== YOUR CODE: ======
-    hp['weight_std'] = 0.01
-    hp['learn_rate'] = 0.01
-    hp['weight_decay'] = 0.001
+    hp['weight_std'] = 0.015
+    hp['learn_rate'] = 0.009
+    hp['weight_decay'] = 0.0015
     # ========================
 
     return hp

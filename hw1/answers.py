@@ -74,39 +74,34 @@ The test set is meant for evaluating the models generalization ability, and by l
 part3_q1 = r"""
 **Your answer:**
 
-
-Write your answer using **markdown** and $\LaTeX$:
-```python
-# A code block
-a = 2
-```
-An equation: $e^{i\pi} -1 = 0$
+The hyperparameters delta and lambda eem like two different hyperparameters, but in fact they both control the same tradeoff: The tradeoff between the data loss and the regularization loss in the objective.
+the exact value of the margin between the scores arbitrary because the weights can shrink or stretch the differences arbitrarily. Hence, the only real tradeoff is how large we allow the weights to grow.
 
 """
 
 part3_q2 = r"""
 **Your answer:**
 
+1. It seems like the linear model learns for each class a filter, which remembers the pixels which are the most likely to be light in the specific class. thus we get a filter that somewhat resembles a member of the class (e.g. the filter for the class 3 looks like the digit 3).
 
-Write your answer using **markdown** and $\LaTeX$:
-```python
-# A code block
-a = 2
-```
-An equation: $e^{i\pi} -1 = 0$
+2. It is similar to KNN in that it quantifies proximity of examples.
+the way it achieves that is different though:
+KNN achives it by looking at the proximity of the test sample to all trained samples (by euclidian distance - lower is good).
+and the linear classifier does that by calculating a proximity to a learned filter (by dot product - higher is good).
 
 """
 
 part3_q3 = r"""
 **Your answer:**
 
+1. I would say the learning rate is just about right (good).
+The graph goes down quickly enough and reaches some saturation / limit.
+If the learning rate would have been too low, we wouldn't reach saturation in the same number of epochs.
+If the learning rate would have been too high, the graph wouldn't have been soo smooth and monotone.
 
-Write your answer using **markdown** and $\LaTeX$:
-```python
-# A code block
-a = 2
-```
-An equation: $e^{i\pi} -1 = 0$
+2. I would say it is slightly overfitted though it is hard to tell from the graph.
+the validation accuracy graph reaches saturation and maybe slightly decreases at the end (while the train accuracy still goes slightly up), which is a sign for overfitting.
+
 
 """
 
