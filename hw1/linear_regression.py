@@ -32,7 +32,7 @@ class LinearRegressor(BaseEstimator, RegressorMixin):
 
         y_pred = None
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        y_pred = X @ self.weights_
         # ========================
 
         return y_pred
@@ -100,7 +100,8 @@ class BiasTrickTransformer(BaseEstimator, TransformerMixin):
 
         xb = None
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        ones = np.ones((X.shape[0],1))
+        xb = np.hstack((ones, X))
         # ========================
 
         return xb
@@ -163,7 +164,20 @@ def top_correlated_features(df: DataFrame, target_feature, n=5):
     # TODO: Calculate correlations with target and sort features by it
 
     # ====== YOUR CODE: ======
-    raise NotImplementedError()
+    
+    # get all correlations to the target
+    corr_mat = df.corr()
+    corr_to_feature = df.corr()[target_feature]
+    corr_to_feature = corr_to_feature.drop([target_feature])
+    
+    # sort by absolute value of corr
+    sorted_corrs = corr_to_feature.sort_values(key= (lambda x : abs(x)), ascending = False)
+    top_features = sorted_corrs[:n]
+    
+    # pack into wanted result
+    top_n_features = list(top_features.index)
+    top_n_corr = list(top_features.values)
+    
     # ========================
 
     return top_n_features, top_n_corr
@@ -179,7 +193,9 @@ def mse_score(y: np.ndarray, y_pred: np.ndarray):
 
     # TODO: Implement MSE using numpy.
     # ====== YOUR CODE: ======
-    raise NotImplementedError()
+    
+    mse = ((y - y_pred)**2).sum() * (1 / y.shape[0])
+
     # ========================
     return mse
 
@@ -194,7 +210,11 @@ def r2_score(y: np.ndarray, y_pred: np.ndarray):
 
     # TODO: Implement R^2 using numpy.
     # ====== YOUR CODE: ======
-    raise NotImplementedError()
+    
+    sum_of_squared_residuals = ((y - y_pred)**2).sum()
+    sum_of_squared_dist_from_mean = ((y - y.mean())**2).sum()
+    r2 = 1 - sum_of_squared_residuals / sum_of_squared_dist_from_mean
+    
     # ========================
     return r2
 
