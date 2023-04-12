@@ -51,7 +51,16 @@ class LinearRegressor(BaseEstimator, RegressorMixin):
 
         w_opt = None
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        
+        # derived solution: w* = (X.T @ X + lambda*N*I)**-1 @ X.T @ y
+        
+        I = np.identity(X.shape[1])
+        I[0,0] = 0
+        N = X.shape[0]
+        c = self.reg_lambda * N
+        
+        w_opt = np.linalg.inv(X.T@X + c*I) @ (X.T @ y)
+        
         # ========================
 
         self.weights_ = w_opt
