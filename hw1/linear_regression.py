@@ -266,7 +266,38 @@ def cv_best_hyperparams(
     #  - You can use MSE or R^2 as a score.
 
     # ====== YOUR CODE: ======
-    raise NotImplementedError()
+    best_mse = None
+    mse_scores = []
+
+    kf = sklearn.model_selection.KFold(n_splits=k_folds)
+
+    for reg_lambda in lambda_range:
+        for degree in degree_range:
+
+            for i, (train_index, test_index) in enumerate(kf.split(X)):
+                
+                params = {'bostonfeaturestransformer__degree': degree, 'linearregressor__reg_lambda': reg_lambda}
+                model.set_params(**params)
+
+                # train model on train indices
+                model.fit(X[train_index, :], y[train_index])
+
+                # test model on test indices
+                y_pred = model.predict(X[test_index, :])
+
+                # evaluate predictions
+                mse = mse_score(y[test_index], y_pred)
+                mse_scores.append(mse)
+
+            # evaluate predictions for total folds for current specific hyperparams
+            mse_avg = sum(mse_scores) / len(mse_scores)
+            mse_scores = [] # empty list
+
+            # save the best hyperparams as result to return
+            if best_mse == None or mse_avg < best_mse:
+                best_mse = mse_avg
+                best_params = params
+
     # ========================
 
     return best_params
