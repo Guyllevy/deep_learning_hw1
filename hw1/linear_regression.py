@@ -86,7 +86,16 @@ def fit_predict_dataframe(
     """
     # TODO: Implement according to the docstring description.
     # ====== YOUR CODE: ======
-    raise NotImplementedError()
+    x = None
+    if feature_names != None:
+        x = df[feature_names]
+    else:
+        x = df.drop(target_name, axis = 1)
+        
+    y = df[target_name]
+        
+    y_pred = model.fit_predict(x,y)
+
     # ========================
     return y_pred
 
@@ -127,7 +136,7 @@ class BostonFeaturesTransformer(BaseEstimator, TransformerMixin):
         # TODO: Your custom initialization, if needed
         # Add any hyperparameters you need and save them as above
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        
         # ========================
 
     def fit(self, X, y=None):
@@ -149,7 +158,8 @@ class BostonFeaturesTransformer(BaseEstimator, TransformerMixin):
 
         X_transformed = None
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        poly = PolynomialFeatures(self.degree)
+        X_transformed = poly.fit_transform(X)
         # ========================
 
         return X_transformed
