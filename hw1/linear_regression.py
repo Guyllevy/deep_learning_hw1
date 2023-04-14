@@ -94,7 +94,7 @@ def fit_predict_dataframe(
         
     y = df[target_name]
         
-    y_pred = model.fit_predict(x,y)
+    y_pred = model.fit_predict(x.values,y)
 
     # ========================
     return y_pred
