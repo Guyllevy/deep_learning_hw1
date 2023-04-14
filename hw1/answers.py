@@ -113,39 +113,27 @@ the validation accuracy graph reaches saturation and maybe slightly decreases at
 part4_q1 = r"""
 **Your answer:**
 
+The ideal pattern to see is low residuals, with no noticable pattern to the residuals. a noticable pattern will indicate that the model missed some pattern it could have learned from.
 
-Write your answer using **markdown** and $\LaTeX$:
-```python
-# A code block
-a = 2
-```
-An equation: $e^{i\pi} -1 = 0$
+compared to the plot we got with 5 features, the last plot that we got with CV has lower residuals which indicates better fitness of the model.
 
 """
 
 part4_q2 = r"""
 **Your answer:**
 
-
-Write your answer using **markdown** and $\LaTeX$:
-```python
-# A code block
-a = 2
-```
-An equation: $e^{i\pi} -1 = 0$
+1. Depends on what you call linear - the model is still linear on the new nonelinear features, but is not linear on the original features. so we could say overall it is not linear.
+2. We cant fit ANY function, for example we cant fit a random function with nothing to learn from previous data.
+3. The decision boundery will no longer be a hyperplane, we can think of a simple classifier that returns 1 if x**2 > 5 and 0 otherwise, with feature x and added nonlinear feature x**2, we can fit such model perfectly with a linear model on x**2, and the decsion boundery would be parabolic.
 
 """
 
 part4_q3 = r"""
 **Your answer:**
 
+1. The advantage of using logspace for CV is that it allows us to search a wide range of values for lambda while avoiding a bias towards smaller or larger values. This is because the impact of lambda on the model's performance is often non-linear, and using a logarithmic scale helps to evenly sample values across this non-linear range.
 
-Write your answer using **markdown** and $\LaTeX$:
-```python
-# A code block
-a = 2
-```
-An equation: $e^{i\pi} -1 = 0$
+2. In cross validation the total amount of times we fit a model to data is K * H where K is the number of folds and H is the number of possible combinations of hyperparameter values. in our example it is k_folds * len(degree_range) * len(lambda_range).
 
 """
 
